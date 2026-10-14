@@ -169,6 +169,7 @@ hook-check: compile_flags.txt build tidy #auto invoking
 print-%:
 	@echo '$* = $($*)'
 
+TEMPLATE_URL_V := https://github.com/var4pro/UefiEdk2Template.git
 init: generate-flags
 	git config core.hooksPath .githooks
 	@git remote add template $(TEMPLATE_URL_V) 2>/dev/null || git remote set-url template $(TEMPLATE_URL_V)
