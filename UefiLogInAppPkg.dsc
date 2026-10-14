@@ -2,7 +2,7 @@
 
 [Defines]
   PLATFORM_NAME                  = UefiLogInAppPkg
-  PLATFORM_GUID                  = F4A23A83-3009-4DEE-8113-BE7B62FCA9AA
+  PLATFORM_GUID                  = F4B23A83-3009-4DEE-8113-BE7B62FCA9AA
   PLATFORM_VERSION               = 1.0
   DSC_SPECIFICATION              = 0x00010005
   OUTPUT_DIRECTORY               = Build/UefiLogInAppPkg
