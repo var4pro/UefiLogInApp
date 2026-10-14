@@ -171,3 +171,5 @@ print-%:
 
 init: generate-flags
 	git config core.hooksPath .githooks
+	@git remote add template $(TEMPLATE_URL_V) 2>/dev/null || git remote set-url template $(TEMPLATE_URL_V)
+	git remote set-url --push template DISABLED
