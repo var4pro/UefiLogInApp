@@ -2,3 +2,4 @@ src/maintest.c
 tidy_report.txt
 /compile_flags.txt
 .cache/
+.vscode/

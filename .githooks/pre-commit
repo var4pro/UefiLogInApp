@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+set -e
+
+REPO_ROOT=$(git rev-parse --show-toplevel)
+cd "$REPO_ROOT"
+
+echo "=========================================="
+echo " Formatting & Running Static Analysis     "
+echo "=========================================="
+
+STAGED_FILES=$(git diff --cached --name-only --diff-filter=ACM | grep -E '\.(c|h|cpp)$' || true)
+
+if [ -n "$STAGED_FILES" ]; then
+    echo "Formatting staged files..."
+    echo "$STAGED_FILES" | xargs clang-format -i    
+    echo "$STAGED_FILES" | xargs git add
+fi
+
+if ! make hook-check; then
+    echo ""
+    echo "[ERROR] 'make hook-check' failed!"
+    echo "Commit canceled."
+    exit 1
+fi
+
+echo "All checks passed and code is formatted!"
+exit 0

@@ -1,11 +1,13 @@
+#change PLATFORM_NAME, OUTPUT_DIRECTORY, [Components] section
+
 [Defines]
-  PLATFORM_NAME                  = LogInDriver
-  PLATFORM_GUID                  = F4A23A83-3009-4DED-8113-BE7B62FCA9AA
+  PLATFORM_NAME                  = UefiLogInAppPkg
+  PLATFORM_GUID                  = F4A23A83-3009-4DEE-8113-BE7B62FCA9AA
   PLATFORM_VERSION               = 1.0
   DSC_SPECIFICATION              = 0x00010005
-  OUTPUT_DIRECTORY               = Build/LogInDriver
+  OUTPUT_DIRECTORY               = Build/UefiLogInAppPkg
   SUPPORTED_ARCHITECTURES        = X64
-  BUILD_TARGETS                  = DEBUG|RELEASE|NOOPT
+  BUILD_TARGETS                  = DEBUG|RELEASE
   SKUID_IDENTIFIER               = DEFAULT
 
 [LibraryClasses]
@@ -61,7 +63,6 @@
   UefiUsbLib|MdePkg/Library/UefiUsbLib/UefiUsbLib.inf
   UefiScsiLib|MdePkg/Library/UefiScsiLib/UefiScsiLib.inf
   SecurityManagementLib|MdeModulePkg/Library/DxeSecurityManagementLib/DxeSecurityManagementLib.inf
-  TimerLib|MdePkg/Library/BaseTimerLibNullTemplate/BaseTimerLibNullTemplate.inf
   SerialPortLib|MdePkg/Library/BaseSerialPortLibNull/BaseSerialPortLibNull.inf
   CapsuleLib|MdeModulePkg/Library/DxeCapsuleLibNull/DxeCapsuleLibNull.inf
   PcdLib|MdePkg/Library/BasePcdLibNull/BasePcdLibNull.inf
@@ -99,18 +100,31 @@
   RngLib|MdePkg/Library/BaseRngLib/BaseRngLib.inf
 
   #
-  # Crypto & TPM
+  # Crypto
   #
-  #Tpm2DeviceLib|SecurityPkg/Library/Tpm2DeviceLibTcg2/Tpm2DeviceLibTcg2.inf
-  #Tpm2CommandLib|SecurityPkg/Library/Tpm2CommandLib/Tpm2CommandLib.inf
-  #Tpm2HelpLib|SecurityPkg/Library/Tpm2HelpLib/Tpm2HelpLib.inf
   BaseCryptLib|CryptoPkg/Library/BaseCryptLib/BaseCryptLib.inf
   OpensslLib|CryptoPkg/Library/OpensslLib/OpensslLib.inf
   IntrinsicLib|CryptoPkg/Library/IntrinsicLib/IntrinsicLib.inf
 
-  StackCheckLib|MdePkg/Library/StackCheckLibNull/StackCheckLibNull.inf # TODO: MADE OR FIND A LIB
+  StackCheckLib|MdePkg/Library/StackCheckLibNull/StackCheckLibNull.inf
 [Components]
-  LogInDriver/LogInDriver.inf
+  UefiLogInApp/UefiLogInApp.inf {
+    <BuildOptions>
+      # Base flags only for this driver
+      GCC:*_*_X64_CC_FLAGS = -std=c23 -I$(MODULE_DIR)/include/ -fstrict-flex-arrays=3 -ftrivial-auto-var-init=zero -fzero-init-padding-bits=all -funsigned-char -fno-delete-null-pointer-checks -fno-finite-loops -fno-strict-aliasing
+      GCC:*_*_X64_CC_FLAGS = -Wall -Wextra -Wpedantic -Wshadow -Wno-unused-parameter -Wpointer-arith -Wframe-larger-than=4096 -Wformat=2 -Wnull-dereference -Wswitch-enum -Wswitch-default -Wtrivial-auto-var-init -Wuseless-cast -Wstrict-flex-arrays -Wattribute-alias=2 -Wduplicated-branches -Wduplicated-cond -Wtrampolines -Wundef -Wcast-qual -Wwrite-strings -Wconversion -Wsign-conversion -Wflex-array-member-not-at-end -Wlogical-op -Wdeprecated-non-prototype -Wnested-externs -Winvalid-pch -Wvla-larger-than=1024 -Wno-error
+
+      # When running Analyzer
+      !if $(ANALYZER) == TRUE
+        GCC:*_*_X64_CC_FLAGS = -fanalyzer -flto
+      !endif
+
+      # When dumping ASM
+      #!if $(ASM_DUMP) == TRUE
+      #  GCC:*_*_X64_CC_FLAGS = --save-temps -fverbose-asm -masm=intel -fno-asynchronous-unwind-tables -fno-lto
+      #  GCC:*_*_X64_DLINK_FLAGS = -fno-lto
+      #!endif
+  }
 
 [PcdsFixedAtBuild]
   !if $(TARGET) == DEBUG
